@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CIPHER — Evaluación final</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/pretest.css"/>
+  <link rel="stylesheet" href="../css/resultados.css"/>
+</head>
+<body>
+
+<div class="pretest-wrapper">
+
+  <!-- PANTALLA 1: Intro al post-test -->
+  <div id="pantalla-intro" class="pretest-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icono">🎓</div>
+      <div class="auth-logo-titulo">EVALUACIÓN FINAL</div>
+      <div class="auth-logo-sub">Misión completada</div>
+    </div>
+
+    <div class="intro-cuerpo">
+      <p>Terminaste la misión. Ahora el sistema evaluará cuánto mejoraste desde el diagnóstico inicial.</p>
+      <ul class="intro-lista">
+        <li>🔢 Las <strong>mismas 16 preguntas</strong> del diagnóstico inicial</li>
+        <li>📊 Al terminar verás tu <strong>comparación completa</strong> antes vs. después</li>
+        <li>⏱ Sin límite de tiempo — responde con calma</li>
+      </ul>
+    </div>
+
+    <button class="btn btn-primary" id="btn-iniciar-posttest">▶ Comenzar evaluación</button>
+  </div>
+
+  <!-- PANTALLA 2: Preguntas -->
+  <div id="pantalla-preguntas" class="pretest-card oculto">
+    <div class="pretest-header">
+      <div class="pretest-progreso-texto">
+        Pregunta <span id="num-actual">1</span> de <span id="num-total">16</span>
+      </div>
+      <div class="pretest-barra-wrap">
+        <div class="pretest-barra" id="barra-progreso"></div>
+      </div>
+      <div class="pretest-tema" id="etiqueta-tema"></div>
+    </div>
+
+    <p class="pretest-enunciado" id="enunciado-pregunta"></p>
+    <div class="pretest-opciones" id="contenedor-opciones"></div>
+    <button class="btn btn-primary oculto" id="btn-siguiente-pregunta">Siguiente →</button>
+  </div>
+
+  <!-- PANTALLA 3: Resultados finales -->
+  <div id="pantalla-resultados" class="pretest-card resultados-card oculto">
+    <div class="res-header">
+      <div class="res-emoji" id="res-emoji">📊</div>
+      <h2 class="res-titulo" id="res-titulo">Tus resultados</h2>
+      <p class="res-sub" id="res-sub"></p>
+    </div>
+
+    <!-- Comparación grande antes/después -->
+    <div class="comparacion">
+      <div class="comp-col">
+        <div class="comp-label">Diagnóstico inicial</div>
+        <div class="comp-valor" id="comp-pre">—</div>
+      </div>
+      <div class="comp-flecha" id="comp-flecha">→</div>
+      <div class="comp-col">
+        <div class="comp-label">Evaluación final</div>
+        <div class="comp-valor destacado" id="comp-post">—</div>
+      </div>
+    </div>
+
+    <div class="mejora-badge" id="mejora-badge"></div>
+
+    <!-- Desglose por tema -->
+    <div class="res-seccion">
+      <h3 class="res-seccion-titulo">Desempeño por tema</h3>
+      <div id="desglose-temas" class="desglose-temas"></div>
+    </div>
+
+    <!-- Estadísticas del juego -->
+    <div class="res-seccion">
+      <h3 class="res-seccion-titulo">Tu recorrido en el juego</h3>
+      <div class="stats-juego" id="stats-juego"></div>
+    </div>
+
+    <div class="res-acciones">
+      <button class="btn btn-primary" id="btn-volver-inicio">Volver al inicio</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/preguntas-pretest.js"></script>
+<script>
+  const usuario = Auth.protegerPagina();
+  if (!usuario) throw new Error('No autenticado');
+
+  const LETRAS = ['A', 'B', 'C', 'D'];
+  const LABELS_TEMA = {
+    puntos:          '📍 Puntos en el plano',
+    cuadrantes:      '🔶 Cuadrantes',
+    desplazamientos: '➡️ Desplazamientos',
+    algebra:         '🧮 Álgebra básica',
+  };
+
+  let indiceActual = 0;
+  let respuestas   = [];
+  let tiempoInicio = null;
+
+  const mostrar = (id) => {
+    ['pantalla-intro','pantalla-preguntas','pantalla-resultados']
+      .forEach(p => document.getElementById(p).classList.add('oculto'));
+    document.getElementById(id).classList.remove('oculto');
+  };
+
+  document.getElementById('btn-iniciar-posttest').addEventListener('click', () => {
+    mostrar('pantalla-preguntas');
+    document.getElementById('num-total').textContent = PREGUNTAS_PRETEST.length;
+    mostrarPregunta(0);
+  });
+
+  function mostrarPregunta(idx) {
+    const p = PREGUNTAS_PRETEST[idx];
+    tiempoInicio = Date.now();
+
+    document.getElementById('num-actual').textContent = idx + 1;
+    document.getElementById('enunciado-pregunta').textContent = p.enunciado;
+    document.getElementById('etiqueta-tema').textContent = LABELS_TEMA[p.tema] ?? p.tema;
+    document.getElementById('barra-progreso').style.width =
+      Math.round((idx / PREGUNTAS_PRETEST.length) * 100) + '%';
+
+    const cont = document.getElementById('contenedor-opciones');
+    cont.innerHTML = '';
+    p.opciones.forEach((texto, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opcion-pretest';
+      btn.innerHTML = `<span class="opcion-letra">${LETRAS[i]}</span>${texto}`;
+      btn.addEventListener('click', () => seleccionarOpcion(i));
+      cont.appendChild(btn);
+    });
+
+    document.getElementById('btn-siguiente-pregunta').classList.add('oculto');
+  }
+
+  function seleccionarOpcion(indiceOpcion) {
+    const p = PREGUNTAS_PRETEST[indiceActual];
+    const es_correcta = indiceOpcion === p.correcta;
+
+    respuestas.push({
+      id_pregunta:    p.id,
+      tema:           p.tema,
+      respuesta_dada: indiceOpcion,
+      es_correcta,
+      tiempo_ms:      Date.now() - tiempoInicio,
+    });
+
+    document.querySelectorAll('.opcion-pretest').forEach((b, i) => {
+      b.disabled = true;
+      if (i === p.correcta) b.classList.add('correcta');
+      if (i === indiceOpcion && !es_correcta) b.classList.add('incorrecta');
+    });
+
+    const btnSig = document.getElementById('btn-siguiente-pregunta');
+    btnSig.classList.remove('oculto');
+    btnSig.textContent = indiceActual < PREGUNTAS_PRETEST.length - 1
+      ? 'Siguiente →' : 'Ver mis resultados';
+
+    btnSig.onclick = () => {
+      indiceActual++;
+      if (indiceActual < PREGUNTAS_PRETEST.length) mostrarPregunta(indiceActual);
+      else finalizar();
+    };
+  }
+
+  async function finalizar() {
+    mostrar('pantalla-resultados');
+
+    // Guardar el post-test antes de pedir el resumen
+    try { await API.post('/posttest', { respuestas }); }
+    catch (e) { console.error('Error guardando post-test:', e); }
+
+    let datos;
+    try { datos = await API.get('/posttest/resumen'); }
+    catch (e) {
+      // Si falla el backend, al menos mostramos el resultado local
+      datos = { pretest: [], posttest: respuestas, partidas: [], ruleta: [] };
+    }
+
+    renderizarResultados(datos);
+  }
+
+  function porcentaje(arr) {
+    if (!arr.length) return null;
+    return Math.round(100 * arr.filter(r => r.es_correcta).length / arr.length);
+  }
+
+  function renderizarResultados(d) {
+    const pctPre  = porcentaje(d.pretest);
+    const pctPost = porcentaje(d.posttest.length ? d.posttest : respuestas);
+
+    document.getElementById('comp-pre').textContent  = pctPre  !== null ? pctPre + '%'  : '—';
+    document.getElementById('comp-post').textContent = pctPost !== null ? pctPost + '%' : '—';
+
+    // Mensaje principal según la mejora
+    const mejora = (pctPre !== null && pctPost !== null) ? pctPost - pctPre : null;
+    const badge  = document.getElementById('mejora-badge');
+
+    if (mejora === null) {
+      badge.textContent = 'No hay diagnóstico inicial para comparar';
+      badge.className   = 'mejora-badge neutro';
+      document.getElementById('res-emoji').textContent = '📊';
+      document.getElementById('res-titulo').textContent = 'Evaluación completada';
+    } else if (mejora > 0) {
+      badge.textContent = `▲ Mejoraste ${mejora} puntos porcentuales`;
+      badge.className   = 'mejora-badge positivo';
+      document.getElementById('res-emoji').textContent  = mejora >= 20 ? '🏆' : '📈';
+      document.getElementById('res-titulo').textContent = mejora >= 20 ? '¡Progreso excelente!' : '¡Mejoraste!';
+      document.getElementById('res-sub').textContent =
+        'Tu desempeño subió respecto al diagnóstico inicial.';
+    } else if (mejora === 0) {
+      badge.textContent = '= Mantuviste tu nivel';
+      badge.className   = 'mejora-badge neutro';
+      document.getElementById('res-emoji').textContent  = '⚖️';
+      document.getElementById('res-titulo').textContent = 'Nivel estable';
+      document.getElementById('res-sub').textContent =
+        'Obtuviste el mismo porcentaje que al inicio.';
+    } else {
+      badge.textContent = `▼ ${Math.abs(mejora)} puntos porcentuales`;
+      badge.className   = 'mejora-badge negativo';
+      document.getElementById('res-emoji').textContent  = '📚';
+      document.getElementById('res-titulo').textContent = 'Sigue practicando';
+      document.getElementById('res-sub').textContent =
+        'Repasa los temas donde tuviste más dificultad y vuelve a intentarlo.';
+    }
+
+    // Desglose por tema: pre vs post
+    const postFinal = d.posttest.length ? d.posttest : respuestas;
+    const temas = ['puntos', 'cuadrantes', 'desplazamientos', 'algebra'];
+    document.getElementById('desglose-temas').innerHTML = temas.map(t => {
+      const pre  = d.pretest.filter(r => r.tema === t);
+      const post = postFinal.filter(r => r.tema === t);
+      const pPre  = porcentaje(pre);
+      const pPost = porcentaje(post);
+      const dif   = (pPre !== null && pPost !== null) ? pPost - pPre : null;
+      const clase = dif === null ? '' : dif > 0 ? 'sube' : dif < 0 ? 'baja' : 'igual';
+      const signo = dif === null ? '' : dif > 0 ? `+${dif}` : `${dif}`;
+
+      return `
+        <div class="tema-fila">
+          <span class="tema-nombre">${LABELS_TEMA[t] ?? t}</span>
+          <span class="tema-barras">
+            <span class="tema-pre">${pPre  !== null ? pPre  + '%' : '—'}</span>
+            <span class="tema-sep">→</span>
+            <span class="tema-post">${pPost !== null ? pPost + '%' : '—'}</span>
+          </span>
+          <span class="tema-dif ${clase}">${signo}</span>
+        </div>`;
+    }).join('');
+
+    // Estadísticas del juego
+    const completadas = d.partidas.filter(p => p.completo).length;
+    const nivelMax    = d.partidas.length ? Math.max(...d.partidas.map(p => p.nivel)) : 0;
+    const detecciones = d.partidas.filter(p => p.fue_detectado).length;
+    const respRuleta  = d.ruleta.flatMap(s => s.ruleta_respuestas ?? []);
+    const pctRuleta   = porcentaje(respRuleta);
+    const rondasGanadas = d.ruleta.filter(s => s.cuota_alcanzada).length;
+
+    document.getElementById('stats-juego').innerHTML = `
+      <div class="stat-juego"><span class="sj-valor">${nivelMax}/3</span><span class="sj-label">Nivel alcanzado</span></div>
+      <div class="stat-juego"><span class="sj-valor">${completadas}</span><span class="sj-label">Niveles completados</span></div>
+      <div class="stat-juego"><span class="sj-valor">${detecciones}</span><span class="sj-label">Veces detectado</span></div>
+      <div class="stat-juego"><span class="sj-valor">${rondasGanadas}/3</span><span class="sj-label">Rondas superadas</span></div>
+      <div class="stat-juego"><span class="sj-valor">${pctRuleta !== null ? pctRuleta + '%' : '—'}</span><span class="sj-label">Acierto en SIGMA Matrix</span></div>
+      <div class="stat-juego"><span class="sj-valor">${respRuleta.length}</span><span class="sj-label">Preguntas respondidas</span></div>`;
+  }
+
+  document.getElementById('btn-volver-inicio').addEventListener('click', () => {
+    // Limpiar todo el progreso de la partida
+    ['cipher_nivel','cipher_fichas_totales','monedasRobadas','cipher_partida_id',
+     'cipher_sesion_ruleta_id','cipher_casillas_estado']
+      .forEach(k => sessionStorage.removeItem(k));
+    window.location.href = '../index.html';
+  });
+</script>
+</body>
+</html>

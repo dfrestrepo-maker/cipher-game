@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CIPHER — Sistema de Recuperación</title>
+  <link rel="stylesheet" href="css/global.css"/>
+  <style>
+    .hub-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      padding: 24px 16px;
+    }
+    .hub-header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .hub-icono    { font-size: 3rem; }
+    .hub-titulo   { font-family: var(--fuente-titulo); font-size: 2.4rem; color: var(--cyan); letter-spacing: 0.1em; }
+    .hub-subtitulo{ font-size: 0.82rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--texto-dim); }
+    .hub-linea    { width: 60px; height: 2px; background: linear-gradient(90deg,transparent,var(--cyan),transparent); margin: 0 auto; }
+
+    .hub-usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      background: var(--fondo-panel);
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: var(--texto-dim);
+    }
+    .hub-usuario strong { color: var(--cyan); }
+    .hub-usuario button {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      color: var(--error);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .hub-modos {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 760px;
+    }
+    .modo-card {
+      flex: 1;
+      min-width: 280px;
+      background: var(--fondo-panel);
+      border: 1px solid var(--borde);
+      border-radius: 14px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .modo-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(20,189,172,0.15);
+    }
+    .modo-icono  { font-size: 2.2rem; }
+    .modo-titulo { font-family: var(--fuente-titulo); font-size: 1.1rem; color: var(--cyan); letter-spacing: 0.05em; }
+    .modo-desc   { font-size: 0.85rem; color: var(--texto-dim); line-height: 1.6; }
+    .modo-tag    {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(20,189,172,0.1);
+      color: var(--cyan);
+      border: 1px solid rgba(20,189,172,0.25);
+      width: fit-content;
+    }
+    .hub-footer { font-size: 0.75rem; color: var(--texto-dim); text-align: center; }
+  </style>
+</head>
+<body>
+<div class="hub-wrapper">
+
+  <div class="hub-header">
+    <div class="hub-icono">⬡</div>
+    <h1 class="hub-titulo">CIPHER</h1>
+    <p class="hub-subtitulo">Sistema de Recuperación de Datos · Instituto Coordinados</p>
+    <div class="hub-linea"></div>
+  </div>
+
+  <!-- Info del usuario -->
+  <div class="hub-usuario" id="hub-usuario">
+    Agente: <strong id="hub-nombre">—</strong>
+    &nbsp;|&nbsp; Grado: <span id="hub-grado">—</span>
+    <button onclick="Auth.cerrarSesion()">Salir</button>
+  </div>
+
+  <!-- Modos de juego -->
+  <div class="hub-modos">
+    <a class="modo-card" id="btn-coordinados" href="#">
+      <div class="modo-icono">🗺️</div>
+      <div class="modo-titulo">COORDINADOS</div>
+      <div class="modo-tag">Fase 1 — Infiltración</div>
+      <p class="modo-desc">
+        Navega la estación de datos usando coordenadas cartesianas.
+        Evita los drones y recupera los fragmentos cifrados.
+      </p>
+    </a>
+
+    <a class="modo-card" id="btn-sigma-matrix" href="#" style="opacity:0.5;cursor:not-allowed"
+       title="Debes completar Coordinados primero">
+      <div class="modo-icono">⬡</div>
+      <div class="modo-titulo">SIGMA MATRIX</div>
+      <div class="modo-tag">Fase 2 — Predicción</div>
+      <p class="modo-desc">
+        Usa los créditos obtenidos en la misión para ejecutar
+        el Motor de Predicción Cuántica y descifrar los datos.
+      </p>
+    </a>
+  </div>
+
+  <p class="hub-footer">
+    Semillero ThinkIOT · Institución Universitaria Colegio Mayor del Cauca
+  </p>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Proteger la página — redirige a login si no hay sesión
+  const usuario = Auth.protegerPagina('estudiante');
+  if (!usuario) throw new Error();
+
+  document.getElementById('hub-nombre').textContent = usuario.nombre;
+  document.getElementById('hub-grado').textContent  = usuario.grado;
+
+  // Botón Coordinados — siempre disponible
+  document.getElementById('btn-coordinados').href =
+    'coordinados/index.html';
+
+  // SIGMA Matrix — se habilita cuando vienen con monedas de Coordinados
+  const monedas = parseInt(sessionStorage.getItem('monedasRobadas') ?? '0');
+  if (monedas > 0) {
+    const btnMatrix = document.getElementById('btn-sigma-matrix');
+    btnMatrix.style.opacity = '1';
+    btnMatrix.style.cursor  = 'pointer';
+    btnMatrix.removeAttribute('title');
+    btnMatrix.href = 'ruleta/index.html';
+  }
+</script>
+</body>
+</html>

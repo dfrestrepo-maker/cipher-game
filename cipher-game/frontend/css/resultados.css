@@ -1,0 +1,138 @@
+/* ═══════════════════════════════════════════════════════
+   RESULTADOS.CSS — Pantalla de evaluación final y comparativa
+   ═══════════════════════════════════════════════════════ */
+
+.resultados-card { max-width: 640px; }
+
+.res-header { text-align: center; display: flex; flex-direction: column; gap: 6px; }
+.res-emoji  { font-size: 3rem; }
+.res-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
+  color: var(--cyan);
+}
+.res-sub { color: var(--texto-dim); font-size: 0.9rem; }
+
+/* ── Comparación antes / después ────────────────────── */
+.comparacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 22px 16px;
+  background: var(--fondo-input);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+}
+.comp-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+.comp-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--texto-dim);
+  text-align: center;
+}
+.comp-valor {
+  font-family: var(--fuente-titulo);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--texto-dim);
+}
+.comp-valor.destacado { color: var(--cyan); }
+.comp-flecha { font-size: 1.6rem; color: var(--borde); flex-shrink: 0; }
+
+/* ── Badge de mejora ────────────────────────────────── */
+.mejora-badge {
+  text-align: center;
+  padding: 10px 18px;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 0 auto;
+}
+.mejora-badge.positivo {
+  background: rgba(61,214,140,0.12);
+  color: var(--exito);
+  border: 1px solid rgba(61,214,140,0.35);
+}
+.mejora-badge.neutro {
+  background: rgba(122,143,166,0.12);
+  color: var(--texto-dim);
+  border: 1px solid var(--borde);
+}
+.mejora-badge.negativo {
+  background: rgba(240,96,96,0.12);
+  color: var(--error);
+  border: 1px solid rgba(240,96,96,0.35);
+}
+
+/* ── Secciones ──────────────────────────────────────── */
+.res-seccion { display: flex; flex-direction: column; gap: 10px; }
+.res-seccion-titulo {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dorado);
+  font-weight: 700;
+}
+
+/* ── Desglose por tema ──────────────────────────────── */
+.desglose-temas { display: flex; flex-direction: column; gap: 7px; }
+.tema-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--fondo-input);
+  border: 1px solid var(--borde);
+  border-radius: 9px;
+  font-size: 0.86rem;
+}
+.tema-nombre  { flex: 1; color: var(--texto); }
+.tema-barras  { display: flex; align-items: center; gap: 8px; font-family: var(--fuente-titulo); }
+.tema-pre     { color: var(--texto-dim); }
+.tema-sep     { color: var(--borde); }
+.tema-post    { color: var(--cyan); font-weight: 700; }
+.tema-dif {
+  min-width: 42px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.tema-dif.sube  { color: var(--exito); }
+.tema-dif.baja  { color: var(--error); }
+.tema-dif.igual { color: var(--texto-dim); }
+
+/* ── Estadísticas del juego ─────────────────────────── */
+.stats-juego {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.stat-juego {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  background: var(--fondo-input);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  text-align: center;
+}
+.sj-valor {
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.sj-label {
+  font-size: 0.7rem;
+  color: var(--texto-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.res-acciones { display: flex; justify-content: center; }
+.res-acciones .btn { max-width: 280px; }

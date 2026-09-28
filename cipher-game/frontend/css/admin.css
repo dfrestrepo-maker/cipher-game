@@ -1,0 +1,274 @@
+/* ═══════════════════════════════════════════════════════
+   ADMIN.CSS — Panel de administración
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Header ─────────────────────────────────────────── */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: var(--fondo-panel);
+  border-bottom: 1px solid var(--borde);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.admin-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+}
+.admin-logo-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 1rem;
+  color: var(--cyan);
+  letter-spacing: 0.06em;
+}
+.admin-header-derecha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.admin-nombre-texto {
+  font-size: 0.85rem;
+  color: var(--texto-dim);
+}
+
+/* ── Contenido ──────────────────────────────────────── */
+.admin-contenido {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Tarjetas de stats ──────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.stat-card {
+  background: var(--fondo-panel);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.stat-icono { font-size: 1.8rem; }
+.stat-valor {
+  font-family: var(--fuente-titulo);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--texto-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Tabla ──────────────────────────────────────────── */
+.tabla-seccion {
+  background: var(--fondo-panel);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.tabla-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--borde);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.tabla-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 1rem;
+  color: var(--dorado);
+  letter-spacing: 0.05em;
+}
+.tabla-wrap { overflow-x: auto; }
+
+.tabla-resultados {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.tabla-resultados th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--texto-dim);
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--borde);
+  white-space: nowrap;
+}
+.tabla-resultados td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--borde);
+  color: var(--texto);
+  vertical-align: middle;
+}
+.tabla-resultados tbody tr:hover td { background: rgba(20,189,172,0.03); }
+.tabla-resultados tbody tr:last-child td { border-bottom: none; }
+.tabla-vacia {
+  text-align: center;
+  color: var(--texto-dim);
+  font-style: italic;
+  padding: 32px !important;
+}
+
+.badge-grado {
+  background: rgba(201,168,76,0.12);
+  color: var(--dorado);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.pct {
+  font-weight: 700;
+  font-family: var(--fuente-titulo);
+  font-size: 0.9rem;
+}
+.pct-alto  { color: var(--exito); }
+.pct-medio { color: var(--dorado); }
+.pct-bajo  { color: var(--error); }
+
+.btn-ver {
+  background: transparent;
+  border: 1px solid var(--borde-activo);
+  color: var(--cyan);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--fuente-ui);
+}
+.btn-ver:hover { background: rgba(20,189,172,0.1); }
+
+/* ── Modal detalle ──────────────────────────────────── */
+.modal-detalle {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,8,18,0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+.modal-detalle-contenido {
+  background: var(--fondo-panel);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.modal-detalle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-detalle-header h3 {
+  font-family: var(--fuente-titulo);
+  font-size: 1.1rem;
+  color: var(--cyan);
+}
+.btn-cerrar {
+  background: transparent;
+  border: none;
+  color: var(--texto-dim);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.btn-cerrar:hover { background: var(--borde); color: var(--texto); }
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+.detalle-bloque {
+  background: var(--fondo-input);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.detalle-bloque h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--dorado);
+  font-weight: 700;
+}
+.detalle-bloque p { font-size: 0.88rem; color: var(--texto); }
+.detalle-temas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+.detalle-temas span {
+  font-size: 0.78rem;
+  color: var(--texto-dim);
+  text-transform: capitalize;
+}
+
+/* ── Celda de mejora pre → post ─────────────────────── */
+.mejora-cell {
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.mejora-cell.sube {
+  background: rgba(61,214,140,0.12);
+  color: var(--exito);
+  border: 1px solid rgba(61,214,140,0.3);
+}
+.mejora-cell.baja {
+  background: rgba(240,96,96,0.12);
+  color: var(--error);
+  border: 1px solid rgba(240,96,96,0.3);
+}
+.mejora-cell.igual,
+.mejora-cell.pendiente {
+  background: rgba(122,143,166,0.1);
+  color: var(--texto-dim);
+  border: 1px solid var(--borde);
+}
+.mejora-cell.pendiente { font-weight: 500; font-size: 0.78rem; }

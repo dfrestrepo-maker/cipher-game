@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGMA Protocol — Coordinados</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- ── Pantalla de inicio ── -->
+  <div id="pantalla-inicio" class="pantalla-inicio">
+    <div class="inicio-caja">
+      <div class="inicio-logo">⊕</div>
+      <h1 class="inicio-titulo">COORDINADOS</h1>
+      <p class="inicio-lema">PIENSA · CALCULA · MUÉVETE SIN SER VISTO</p>
+      <p id="inicio-nivel-badge" class="inicio-nivel-badge"></p>
+      <div class="inicio-reglas" id="inicio-reglas"></div>
+      <button id="btn-iniciar" class="btn-iniciar">INICIAR MISIÓN ▶</button>
+    </div>
+  </div>
+
+  <!-- ── Barra superior ── -->
+  <header class="barra-superior">
+    <div class="titulo-juego">
+      <span class="logo">⊕</span>
+      <div>
+        <h1>COORDINADOS</h1>
+        <p class="subtitulo">PIENSA. CALCULA. MUÉVETE SIN SER VISTO.</p>
+      </div>
+    </div>
+    <div class="progreso-centro">
+      <div class="habitacion-info">
+        <span id="etiqueta-habitacion">NIVEL 1 / 3</span>
+        <span id="etiqueta-concepto">PLANO CARTESIANO</span>
+      </div>
+      <div id="puntos-progreso" class="puntos-progreso">
+        <span class="punto activo"></span>
+        <span class="punto"></span>
+        <span class="punto"></span>
+      </div>
+    </div>
+    <div class="stats-header">
+      <div class="stat">
+        <span class="stat-label">⏱ TIEMPO RESTANTE</span>
+        <span id="tiempo" class="stat-valor">00:00</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">🪙 MONEDAS</span>
+        <span id="monedas-count" class="stat-valor">0 / 3</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">◎ INTENTOS</span>
+        <span id="intentos" class="stat-valor">1 / 3</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Área principal ── -->
+  <main class="area-juego">
+    <aside class="panel-izquierdo">
+      <div class="card">
+        <h3 class="card-titulo">LEYENDA</h3>
+        <ul class="leyenda-lista">
+          <li><span class="ic ic-jugador"></span>Jugador</li>
+          <li><span class="ic ic-guardia"></span>Guardia</li>
+          <li><span class="ic ic-vision"></span>Visión</li>
+          <li><span class="ic ic-salida"></span>Salida</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="card-titulo">MAPA</h3>
+        <canvas id="minimapa" width="130" height="130"></canvas>
+      </div>
+    </aside>
+
+    <div class="contenedor-canvas">
+      <canvas id="canvas-juego" width="650" height="650"></canvas>
+    </div>
+
+    <aside class="panel-derecho">
+      <div class="card">
+        <h3 class="card-titulo">🎯 OBJETIVO</h3>
+        <p id="texto-objetivo">Llega a la salida sin ser detectado por los guardias.</p>
+      </div>
+      <div class="card">
+        <h3 class="card-titulo amarillo">PROBLEMA ACTUAL</h3>
+        <p id="texto-problema">Cargando...</p>
+        <p class="posicion-label">Posición actual: <span id="posicion-actual" class="coord-badge">( ?, ? )</span></p>
+      </div>
+      <div class="card">
+        <h3 class="card-titulo amarillo">INGRESA TUS COORDENADAS</h3>
+        <p class="entrada-desc">Escribe el punto al que quieres moverte:</p>
+        <div class="grupo-inputs">
+          <span class="par">(</span>
+          <input id="input-x" type="number" class="coord-input" placeholder="x" min="-10" max="10" step="1">
+          <span class="par">,</span>
+          <input id="input-y" type="number" class="coord-input" placeholder="y" min="-10" max="10" step="1">
+          <span class="par">)</span>
+        </div>
+        <button id="btn-mover" class="btn-ejecutar">EJECUTAR MOVIMIENTO ▶</button>
+      </div>
+      <div class="card card-pista">
+        <div class="pista-titulo">💡 <strong>PISTA</strong></div>
+        <p id="texto-pista">Observa el mapa y encuentra una ruta segura.</p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ── Barra inferior ── -->
+  <footer class="barra-inferior">
+    <div class="footer-seccion">
+      <h4 class="footer-titulo">FUNCIONES Y CÁLCULOS</h4>
+      <div id="area-calculos" class="area-calculos"><span class="apagado">—</span></div>
+    </div>
+    <div class="footer-seccion">
+      <h4 class="footer-titulo">HISTORIAL DE MOVIMIENTOS</h4>
+      <div id="historial" class="historial"><span class="apagado">Sin movimientos aún</span></div>
+    </div>
+    <div class="footer-seccion">
+      <h4 class="footer-titulo">CONTROLES</h4>
+      <p>Escribe <strong>x</strong> e <strong>y</strong> → presiona <strong>EJECUTAR</strong></p>
+      <p>También funciona con <strong>Enter</strong></p>
+    </div>
+  </footer>
+
+  <!-- ── Overlay: detectado ── -->
+  <div id="overlay-deteccion" class="overlay oculto">
+    <div class="overlay-caja rojo">
+      <div class="overlay-emoji">🚨</div>
+      <h2>¡DETECTADO!</h2>
+      <p id="msg-deteccion">El guardia te vio en esa posición.</p>
+      <div class="info-box rojo-suave">
+        <span class="info-label">Te detectaron en:</span>
+        <span id="pos-detectado" class="info-coord">—</span>
+      </div>
+      <button id="btn-reiniciar" class="btn-overlay btn-rojo">REINICIAR HABITACIÓN</button>
+    </div>
+  </div>
+
+  <!-- ── Overlay: victoria ── -->
+  <div id="overlay-victoria" class="overlay oculto">
+    <div class="overlay-caja verde">
+      <div class="overlay-emoji">🎉</div>
+      <h2>¡HABITACIÓN COMPLETADA!</h2>
+      <p>Llegaste a la salida sin ser detectado.</p>
+      <div class="stats-victoria">
+        <div class="stat-v">
+          <span id="stat-movimientos" class="stat-v-valor">—</span>
+          <span class="stat-v-label">movimientos</span>
+        </div>
+        <div class="stat-v">
+          <span id="stat-tiempo" class="stat-v-valor">—</span>
+          <span class="stat-v-label">tiempo</span>
+        </div>
+      </div>
+      <button id="btn-siguiente" class="btn-overlay btn-verde">SIGUIENTE HABITACIÓN</button>
+    </div>
+  </div>
+
+  
+<script src="../js/musica.js"></script>
+<script src="../js/controles-audio.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script>
+  // Proteger: solo estudiantes autenticados
+  if (!Auth.estaAutenticado()) window.location.href = '../pages/login.html';
+</script>
+<script src="js/config.js"></script>
+  <script src="js/habitaciones.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/entidades.js"></script>
+  <script src="js/juego.js"></script>
+  <script src="js/ui.js"></script>
+
+</body>
+</html>

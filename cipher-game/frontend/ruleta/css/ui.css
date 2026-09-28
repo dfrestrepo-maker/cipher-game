@@ -1,0 +1,376 @@
+/* ═══════════════════════════════════════════════════════════
+   UI.CSS — Tarjetas de problema, modales, alertas
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Contenedor del problema único (centrado) ─────────── */
+.contenedor-problema-unico {
+  display: flex;
+  justify-content: center;
+}
+.contenedor-problema-unico .tarjeta-problema {
+  width: 100%;
+  max-width: 460px;
+}
+
+/* ── Tarjeta de problema ────────────────────────────────── */
+.tarjeta-problema {
+  background: var(--color-fondo-tarjeta);
+  border: 2px solid var(--color-borde);
+  border-radius: var(--radio-tarjeta);
+  padding: 16px;
+  cursor: pointer;
+  transition:
+    border-color var(--transicion-rapida),
+    background   var(--transicion-rapida),
+    transform    var(--transicion-rapida);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tarjeta-problema:hover {
+  border-color: var(--color-purpura);
+  background: var(--color-fondo-tarjeta-hover);
+  transform: translateY(-2px);
+}
+.tarjeta-problema.seleccionada {
+  border-color: var(--color-teal);
+  background: rgba(20,189,172,0.07);
+  box-shadow: 0 0 20px rgba(20,189,172,0.2);
+}
+.problema-numero {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+.problema-enunciado {
+  font-size: 1rem;
+  color: var(--color-texto);
+  line-height: 1.55;
+}
+.problema-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-borde-suave);
+  background: rgba(255,255,255,0.02);
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--color-texto-secundario);
+  transition:
+    border-color var(--transicion-rapida),
+    background   var(--transicion-rapida),
+    color        var(--transicion-rapida);
+}
+.opcion:hover {
+  border-color: var(--color-purpura);
+  color: var(--color-texto);
+  background: rgba(123,104,238,0.08);
+}
+.opcion.seleccionada {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+  background: rgba(20,189,172,0.1);
+}
+.opcion-letra {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  background: var(--color-borde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: background var(--transicion-rapida);
+}
+.opcion.seleccionada .opcion-letra {
+  background: var(--color-teal);
+  color: #fff;
+}
+
+/* Botón confirmar (aparece dinámicamente) */
+#btn-confirmar {
+  display: block;
+  margin: 18px auto 0;
+  min-width: 200px;
+}
+
+/* ── Alerta de casilla ya modificada ─────────────────────*/
+.alerta-casilla {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  animation: aparecer-modal 0.3s ease;
+}
+@keyframes aparecer-modal {
+  from { opacity:0; transform:translateY(-6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.alerta-casilla.positivo {
+  background: var(--color-positivo-fondo);
+  border: 1px solid rgba(61,214,140,0.35);
+}
+.alerta-casilla.negativo {
+  background: var(--color-negativo-fondo);
+  border: 1px solid rgba(240,96,96,0.35);
+}
+.alerta-icono-texto { font-size: 1.3rem; flex-shrink: 0; }
+.alerta-casilla p   { font-size: 0.85rem; line-height: 1.4; }
+.alerta-casilla.positivo p { color: var(--color-positivo); }
+.alerta-casilla.negativo p { color: var(--color-negativo); }
+.alerta-casilla strong     { font-weight: 700; }
+
+/* ── Panel de apuesta ────────────────────────────────────── */
+.panel-apuesta {
+  background: var(--color-fondo-tarjeta);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-tarjeta);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.apuesta-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.88rem;
+}
+
+.apuesta-etiqueta { color: var(--color-texto-secundario); }
+
+.apuesta-valor { font-weight: 600; color: var(--color-texto); }
+
+.apuesta-multiplicador {
+  font-family: var(--fuente-titulo);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-dorado);
+  transition: color var(--transicion-rapida);
+}
+
+.apuesta-fila-monto { gap: 12px; }
+
+/* Stepper +/- */
+.apuesta-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--color-fondo-panel);
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.stepper-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-teal);
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transicion-rapida);
+  font-family: var(--fuente-ui);
+}
+
+.stepper-btn:hover:not(:disabled) { background: rgba(20,189,172,0.12); }
+.stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.stepper-valor {
+  min-width: 44px;
+  text-align: center;
+  font-family: var(--fuente-titulo);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-texto);
+  border-left: 1px solid var(--color-borde);
+  border-right: 1px solid var(--color-borde);
+  padding: 4px 6px;
+}
+
+/* Preview ganancia/pérdida */
+.apuesta-resultado-preview {
+  justify-content: center;
+  gap: 16px;
+  padding-top: 4px;
+  border-top: 1px solid var(--color-borde-suave);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.preview-gana   { color: var(--color-positivo); }
+.preview-pierde { color: var(--color-negativo); }
+.preview-sep    { color: var(--color-borde); }
+
+/* Opción apostada (marcada con el toggle de apuesta) */
+.opcion.apostada {
+  border-color: var(--color-dorado);
+  background: rgba(201,168,76,0.08);
+}
+
+.opcion.apostada .opcion-letra {
+  background: var(--color-dorado);
+  color: #000;
+}
+
+/* Botón confirmar cuando no está listo */
+#btn-confirmar:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Cronómetro circular ─────────────────────────────────── */
+.cronometro-contenedor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 12px;
+}
+
+.cronometro-svg {
+  width: 80px;
+  height: 80px;
+  transform: rotate(-90deg);
+}
+
+.cronometro-pista {
+  fill: none;
+  stroke: var(--color-borde);
+  stroke-width: 6;
+}
+
+.cronometro-arco {
+  fill: none;
+  stroke: var(--color-teal);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 213.6;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear, stroke 0.4s ease;
+}
+
+.cronometro-centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+#cronometro-numero {
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-texto);
+  transition: color 0.3s ease;
+}
+
+.cronometro-unidad {
+  font-size: 0.6rem;
+  color: var(--color-texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Estado: advertencia (≤ 50%) */
+.cronometro-advertencia #cronometro-numero { color: var(--color-dorado); }
+
+/* Estado: urgente (≤ 25%) */
+.cronometro-urgente #cronometro-numero {
+  color: var(--color-negativo);
+  animation: cronometro-pulsar 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes cronometro-pulsar {
+  from { transform: scale(1); }
+  to   { transform: scale(1.18); }
+}
+
+/* ── Input editable de apuesta ───────────────────────────── */
+.stepper-input {
+  width: 64px;
+  text-align: center;
+  font-family: var(--fuente-titulo);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-texto);
+  background: transparent;
+  border: none;
+  border-left:  1px solid var(--color-borde);
+  border-right: 1px solid var(--color-borde);
+  padding: 4px 6px;
+  height: 32px;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.stepper-input::-webkit-outer-spin-button,
+.stepper-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper-input:focus {
+  background: rgba(20,189,172,0.08);
+  color: var(--color-teal);
+}
+
+/* ── Botones rápidos de apuesta ──────────────────────────── */
+.apuesta-acciones-rapidas {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-rapido {
+  flex: 1;
+  padding: 7px 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+  transition: all var(--transicion-rapida);
+  font-family: var(--fuente-ui);
+}
+
+.btn-rapido:hover:not(:disabled) {
+  border-color: var(--color-purpura);
+  color: var(--color-texto);
+  background: rgba(123,104,238,0.1);
+}
+
+.btn-rapido-todo {
+  border-color: var(--color-dorado);
+  color: var(--color-dorado);
+}
+
+.btn-rapido-todo:hover:not(:disabled) {
+  background: rgba(201,168,76,0.12);
+  border-color: var(--color-dorado-claro);
+}
+
+.btn-rapido:disabled { opacity: 0.3; cursor: not-allowed; }

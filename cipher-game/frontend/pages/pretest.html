@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CIPHER — Diagnóstico inicial</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/pretest.css"/>
+</head>
+<body>
+
+<div class="pretest-wrapper">
+
+  <!-- PANTALLA: Bienvenida al pre-test -->
+  <div id="pantalla-intro" class="pretest-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icono">📡</div>
+      <div class="auth-logo-titulo">DIAGNÓSTICO</div>
+      <div class="auth-logo-sub">Evaluación inicial del sistema</div>
+    </div>
+
+    <div class="intro-cuerpo">
+      <p>Antes de iniciar la misión, el sistema debe evaluar tu nivel de conocimiento en coordenadas matemáticas.</p>
+      <ul class="intro-lista">
+        <li>🔢 <strong>12 preguntas</strong> de opción múltiple</li>
+        <li>📐 Temas: plano cartesiano, cuadrantes y desplazamientos</li>
+        <li>⏱ Sin límite de tiempo — responde con calma</li>
+        <li>📊 Tus resultados ayudarán a mejorar el programa</li>
+      </ul>
+      <p class="intro-nota">Este diagnóstico es obligatorio y solo se realiza una vez.</p>
+    </div>
+
+    <button class="btn btn-primary" id="btn-iniciar-pretest">
+      ▶ Iniciar diagnóstico
+    </button>
+  </div>
+
+  <!-- PANTALLA: Preguntas -->
+  <div id="pantalla-preguntas" class="pretest-card oculto">
+    <div class="pretest-header">
+      <div class="pretest-progreso-texto">
+        Pregunta <span id="num-actual">1</span> de <span id="num-total">12</span>
+      </div>
+      <div class="pretest-barra-wrap">
+        <div class="pretest-barra" id="barra-progreso"></div>
+      </div>
+      <div class="pretest-tema" id="etiqueta-tema">puntos</div>
+    </div>
+
+    <p class="pretest-enunciado" id="enunciado-pregunta"></p>
+
+    <div class="pretest-opciones" id="contenedor-opciones"></div>
+
+    <button class="btn btn-primary oculto" id="btn-siguiente-pregunta">
+      Siguiente →
+    </button>
+  </div>
+
+  <!-- PANTALLA: Resultados -->
+  <div id="pantalla-resultados" class="pretest-card oculto">
+    <div class="resultado-icono" id="resultado-emoji">📊</div>
+    <h2 class="resultado-titulo" id="resultado-titulo">Diagnóstico completado</h2>
+    <p class="resultado-desc" id="resultado-desc"></p>
+
+    <div class="resultado-desglose" id="resultado-desglose"></div>
+
+    <button class="btn btn-primary" id="btn-ir-juego">
+      ▶ Iniciar misión
+    </button>
+  </div>
+
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/preguntas-pretest.js"></script>
+<script>
+  const usuario = Auth.protegerPagina();
+  if (!usuario) throw new Error('No autenticado');
+
+  const LETRAS   = ['A', 'B', 'C', 'D'];
+  let indiceActual = 0;
+  let respuestas   = [];   // { id_pregunta, tema, respuesta_dada, es_correcta, tiempo_ms }
+  let tiempoInicio = null;
+
+  // ── Navegación entre pantallas ───────────────────────
+  const mostrar = (id) => {
+    ['pantalla-intro','pantalla-preguntas','pantalla-resultados']
+      .forEach(p => document.getElementById(p).classList.add('oculto'));
+    document.getElementById(id).classList.remove('oculto');
+  };
+
+  // ── Iniciar pre-test ─────────────────────────────────
+  document.getElementById('btn-iniciar-pretest').addEventListener('click', () => {
+    mostrar('pantalla-preguntas');
+    document.getElementById('num-total').textContent = PREGUNTAS_PRETEST.length;
+    mostrarPregunta(0);
+  });
+
+  function mostrarPregunta(idx) {
+    const p = PREGUNTAS_PRETEST[idx];
+    tiempoInicio = Date.now();
+
+    document.getElementById('num-actual').textContent  = idx + 1;
+    document.getElementById('enunciado-pregunta').textContent = p.enunciado;
+    document.getElementById('etiqueta-tema').textContent = {
+      puntos: '📍 Puntos en el plano',
+      cuadrantes: '🔶 Cuadrantes',
+      desplazamientos: '➡️ Desplazamientos',
+      algebra: '🧮 Álgebra básica',
+    }[p.tema] ?? p.tema;
+
+    // Barra de progreso
+    const pct = Math.round((idx / PREGUNTAS_PRETEST.length) * 100);
+    document.getElementById('barra-progreso').style.width = pct + '%';
+
+    // Opciones
+    const cont = document.getElementById('contenedor-opciones');
+    cont.innerHTML = '';
+    p.opciones.forEach((texto, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opcion-pretest';
+      btn.innerHTML = `<span class="opcion-letra">${LETRAS[i]}</span>${texto}`;
+      btn.addEventListener('click', () => seleccionarOpcion(i, btn));
+      cont.appendChild(btn);
+    });
+
+    document.getElementById('btn-siguiente-pregunta').classList.add('oculto');
+  }
+
+  function seleccionarOpcion(indiceOpcion, btnEl) {
+    const p          = PREGUNTAS_PRETEST[indiceActual];
+    const es_correcta = indiceOpcion === p.correcta;
+    const tiempo_ms  = Date.now() - tiempoInicio;
+
+    // Guardar respuesta
+    respuestas.push({
+      id_pregunta:   p.id,
+      tema:          p.tema,
+      respuesta_dada: indiceOpcion,
+      es_correcta,
+      tiempo_ms,
+    });
+
+    // Feedback visual
+    document.querySelectorAll('.opcion-pretest').forEach((b, i) => {
+      b.disabled = true;
+      if (i === p.correcta)   b.classList.add('correcta');
+      if (i === indiceOpcion && !es_correcta) b.classList.add('incorrecta');
+    });
+
+    const btnSig = document.getElementById('btn-siguiente-pregunta');
+    btnSig.classList.remove('oculto');
+    btnSig.textContent = indiceActual < PREGUNTAS_PRETEST.length - 1
+      ? 'Siguiente →'
+      : 'Ver resultados';
+
+    btnSig.onclick = () => {
+      indiceActual++;
+      if (indiceActual < PREGUNTAS_PRETEST.length) {
+        mostrarPregunta(indiceActual);
+      } else {
+        mostrarResultados();
+      }
+    };
+  }
+
+  async function mostrarResultados() {
+    mostrar('pantalla-resultados');
+
+    const correctas = respuestas.filter(r => r.es_correcta).length;
+    const total     = respuestas.length;
+    const pct       = Math.round((correctas / total) * 100);
+
+    // Emoji y mensaje según rendimiento
+    let emoji, titulo;
+    if (pct >= 80)      { emoji = '🏆'; titulo = '¡Excelente dominio!'; }
+    else if (pct >= 60) { emoji = '✅'; titulo = 'Buen nivel base'; }
+    else if (pct >= 40) { emoji = '📚'; titulo = 'Conocimiento parcial'; }
+    else                { emoji = '🎯'; titulo = 'La misión te enseñará'; }
+
+    document.getElementById('resultado-emoji').textContent  = emoji;
+    document.getElementById('resultado-titulo').textContent = titulo;
+    document.getElementById('resultado-desc').textContent   =
+      `Respondiste correctamente ${correctas} de ${total} preguntas (${pct}%).`;
+
+    // Desglose por tema
+    const temas = ['puntos', 'cuadrantes', 'desplazamientos', 'algebra'];
+    const labels = { puntos: 'Puntos en el plano', cuadrantes: 'Cuadrantes', desplazamientos: 'Desplazamientos', algebra: 'Álgebra básica' };
+    const desglose = document.getElementById('resultado-desglose');
+    desglose.innerHTML = temas.map(tema => {
+      const del_tema  = respuestas.filter(r => r.tema === tema);
+      const bien      = del_tema.filter(r => r.es_correcta).length;
+      return `<div class="desglose-fila">
+        <span>${labels[tema]}</span>
+        <span>${bien}/${del_tema.length}</span>
+      </div>`;
+    }).join('');
+
+    // Guardar en la base de datos
+    try {
+      await API.post('/pretest', { respuestas });
+    } catch (e) {
+      console.error('Error al guardar pre-test:', e);
+    }
+
+    document.getElementById('btn-ir-juego').addEventListener('click', () => {
+      window.location.href = '../index.html';
+    });
+  }
+</script>
+</body>
+</html>

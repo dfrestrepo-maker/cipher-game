@@ -1,0 +1,171 @@
+/* ═══════════════════════════════════════════════════════
+   GLOBAL.CSS — Estilos base de CIPHER Game
+   Paleta: misma que el juego (oscuro, cyan, dorado)
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --fondo:          #080E1A;
+  --fondo-panel:    #0D1B2E;
+  --fondo-input:    #111E33;
+  --borde:          #1E2E45;
+  --borde-activo:   #14BDAC;
+  --cyan:           #14BDAC;
+  --cyan-oscuro:    #0A8E80;
+  --dorado:         #C9A84C;
+  --dorado-claro:   #E8C96A;
+  --texto:          #EEE8D5;
+  --texto-dim:      #7A8FA6;
+  --error:          #F06060;
+  --exito:          #3DD68C;
+  --radio:          10px;
+  --fuente-titulo:  'Orbitron', sans-serif;
+  --fuente-ui:      'Inter', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100vh;
+  background: var(--fondo);
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(20,189,172,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(201,168,76,0.05) 0%, transparent 55%);
+  color: var(--texto);
+  font-family: var(--fuente-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Utilidades ─────────────────────────────────────── */
+.oculto { display: none !important; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: var(--radio);
+  font-family: var(--fuente-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+  text-decoration: none;
+}
+.btn:active  { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan), var(--cyan-oscuro));
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(20,189,172,0.3);
+  width: 100%;
+}
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 6px 26px rgba(20,189,172,0.5);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--cyan);
+  border: 1.5px solid var(--cyan);
+  width: 100%;
+}
+.btn-ghost:hover { background: rgba(20,189,172,0.08); }
+
+/* ── Formularios ────────────────────────────────────── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-dim);
+}
+.form-input {
+  background: var(--fondo-input);
+  border: 1.5px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 11px 14px;
+  color: var(--texto);
+  font-family: var(--fuente-ui);
+  font-size: 0.95rem;
+  transition: border-color 0.15s ease;
+  outline: none;
+  width: 100%;
+}
+.form-input:focus  { border-color: var(--borde-activo); }
+.form-input::placeholder { color: var(--texto-dim); }
+.form-input.error  { border-color: var(--error); }
+
+/* Mensajes ─────────────────────────────────────────── */
+.msg {
+  padding: 10px 14px;
+  border-radius: var(--radio);
+  font-size: 0.85rem;
+  text-align: center;
+}
+.msg-error  { background: rgba(240,96,96,0.12); color: var(--error); border: 1px solid rgba(240,96,96,0.3); }
+.msg-exito  { background: rgba(61,214,140,0.12); color: var(--exito); border: 1px solid rgba(61,214,140,0.3); }
+
+/* ── Card centrada ──────────────────────────────────── */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+.auth-card {
+  background: var(--fondo-panel);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.auth-logo {
+  text-align: center;
+}
+.auth-logo-icono { font-size: 2.4rem; }
+.auth-logo-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+  margin-top: 6px;
+}
+.auth-logo-sub {
+  font-size: 0.75rem;
+  color: var(--texto-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.auth-divider {
+  height: 1px;
+  background: var(--borde);
+}
+.auth-footer {
+  text-align: center;
+  font-size: 0.83rem;
+  color: var(--texto-dim);
+}
+.auth-footer a {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 600;
+}
+.auth-footer a:hover { text-decoration: underline; }

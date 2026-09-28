@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SIGMA Matrix — Motor de Predicción</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/ruleta.css"/>
+  <link rel="stylesheet" href="css/ui.css"/>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════════════════════════
+       PANTALLA DE INICIO
+  ══════════════════════════════ -->
+  <div id="pantalla-inicio" class="pantalla activa">
+    <div class="inicio-contenedor">
+      <div class="inicio-logo">⬡</div>
+      <h1 class="inicio-titulo">SIGMA Matrix</h1>
+      <p class="inicio-subtitulo">Motor de Predicción Cuántica</p>
+      <div class="inicio-linea"></div>
+
+      <!-- Botín traído desde Coordinados -->
+      <div id="botin-info" class="botin-info">
+        <span class="botin-icono">🪙</span>
+        <div>
+          <p id="botin-texto" class="botin-texto">Cargando botín...</p>
+          <p class="botin-subtexto">Cada fragmento recuperado en Coordinados vale 15 créditos de predicción</p>
+        </div>
+      </div>
+
+      <div class="inicio-reglas">
+        <div class="inicio-regla">
+          <span class="regla-icono">🎱</span>
+          <span>La bola cae en una casilla → recibes sus fichas automáticamente</span>
+        </div>
+        <div class="inicio-regla">
+          <span class="regla-icono">💸</span>
+          <span>Asigna créditos al nodo correcto para multiplicar tu resultado</span>
+        </div>
+        <div class="inicio-regla">
+          <span class="regla-icono">📐</span>
+          <span>Acierta para potenciar el nodo · Falla y se degradará permanentemente</span>
+        </div>
+      </div>
+      <button id="btn-comenzar" class="btn btn-primario btn-comenzar">▶ Acceder al Sistema</button>
+      <p class="inicio-nota">Plano cartesiano · Algebra · Predicción</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PANTALLA DE JUEGO
+  ══════════════════════════════ -->
+  <div id="pantalla-juego" class="pantalla oculto">
+    <header id="hud">
+      <div class="hud-bloque">
+        <span class="hud-etiqueta">Ronda</span>
+        <span class="hud-valor" id="valor-ronda">1</span>
+        <span id="hud-tema-ronda" style="font-size:0.6rem;color:var(--color-dorado);text-align:center;margin-top:2px"></span>
+      </div>
+      <div class="hud-bloque hud-central">
+        <div class="hud-fichas">
+          <span class="hud-etiqueta">Fichas</span>
+          <span class="hud-valor acento-dorado" id="valor-fichas">10</span>
+        </div>
+        <div class="hud-separador">›</div>
+        <div class="hud-cuota">
+          <span class="hud-etiqueta">Cuota</span>
+          <span class="hud-valor acento-teal" id="valor-cuota">200</span>
+        </div>
+      </div>
+      <div class="hud-bloque">
+        <span class="hud-etiqueta">Bolas</span>
+        <div id="indicadores-bolas"></div>
+      </div>
+    </header>
+
+    <div id="zona-contenido">
+      <div id="zona-izquierda">
+        <main id="zona-ruleta">
+          <canvas id="canvas-ruleta"></canvas>
+        </main>
+        <div id="toast-casilla" class="toast-casilla oculto">
+          <div class="toast-fila">
+            <span class="toast-etiqueta">Casilla</span>
+            <span id="toast-numero" class="toast-numero">0</span>
+          </div>
+          <div id="toast-fichas" class="toast-fichas base">+3</div>
+          <div class="toast-barra-wrap"><div id="toast-barra" class="toast-barra"></div></div>
+          <p class="toast-subtexto">Preparando problema…</p>
+        </div>
+        <footer id="controles">
+          <button id="btn-lanzar" class="btn btn-primario">Lanzar Bola</button>
+          <div id="info-bolas" class="texto-secundario" style="text-align:center">
+            Bolas restantes: <span id="contador-bolas">5</span>/<span id="contador-bolas-total">5</span>
+          </div>
+        </footer>
+      </div>
+
+      <aside id="panel-casillas">
+        <h3 class="panel-titulo">Tablero</h3>
+        <div class="panel-tabs">
+          <button class="panel-tab activa" data-tab="activadas">Activadas</button>
+          <button class="panel-tab" data-tab="todas">Todas</button>
+        </div>
+        <div id="seccion-activadas" class="panel-seccion">
+          <div id="lista-casillas"><p class="panel-vacio">Sin modificaciones aún</p></div>
+        </div>
+        <div id="seccion-todas" class="panel-seccion oculto">
+          <p class="panel-subtitulo" style="text-align:center;margin-bottom:6px">Verde=mejorada · Rojo=negativa</p>
+          <div id="grid-todas-casillas"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       MODAL: PROBLEMA + APUESTA
+  ══════════════════════════════ -->
+  <div id="modal-problema" class="modal oculto" role="dialog" aria-modal="true">
+    <div class="modal-contenido">
+      <div class="modal-encabezado">
+        <div class="cronometro-contenedor">
+          <svg class="cronometro-svg" viewBox="0 0 80 80">
+            <circle class="cronometro-pista" cx="40" cy="40" r="34"/>
+            <circle id="cronometro-arco" class="cronometro-arco" cx="40" cy="40" r="34"/>
+          </svg>
+          <div class="cronometro-centro">
+            <span id="cronometro-numero">20</span>
+            <span class="cronometro-unidad">seg</span>
+          </div>
+        </div>
+        <h2 class="modal-titulo">Casilla <span id="casilla-aterrizaje">—</span></h2>
+        <p class="modal-subtitulo">Selecciona opciones, apuesta fichas y confirma antes de que el tiempo se agote.</p>
+      </div>
+      <div id="alerta-casilla" class="alerta-casilla oculto">
+        <span id="alerta-icono" class="alerta-icono-texto"></span>
+        <p id="alerta-texto"></p>
+      </div>
+      <div id="contenedor-problemas" class="contenedor-problema-unico"></div>
+      <div id="panel-apuesta" class="panel-apuesta">
+        <div class="apuesta-fila">
+          <span class="apuesta-etiqueta">Opciones apostadas</span>
+          <span id="apuesta-opciones-count" class="apuesta-valor">0 / máx 3</span>
+        </div>
+        <div class="apuesta-fila">
+          <span class="apuesta-etiqueta">Multiplicador</span>
+          <span id="apuesta-multiplicador" class="apuesta-multiplicador">—</span>
+        </div>
+        <div class="apuesta-fila apuesta-fila-monto">
+          <span class="apuesta-etiqueta">Fichas a apostar</span>
+          <div class="apuesta-stepper">
+            <button id="btn-apuesta-menos" class="stepper-btn">−</button>
+            <input type="number" id="apuesta-monto-display" class="stepper-input" value="1" min="1"/>
+            <button id="btn-apuesta-mas" class="stepper-btn">+</button>
+          </div>
+        </div>
+        <div class="apuesta-acciones-rapidas">
+          <button id="btn-apuesta-mitad" class="btn-rapido">½ Mitad</button>
+          <button id="btn-apuesta-todo"  class="btn-rapido btn-rapido-todo">Apostar Todo</button>
+        </div>
+        <div class="apuesta-fila apuesta-resultado-preview">
+          <span id="apuesta-preview-gana" class="preview-gana">—</span>
+          <span class="preview-sep">·</span>
+          <span id="apuesta-preview-pierde" class="preview-pierde">—</span>
+        </div>
+      </div>
+      <button id="btn-confirmar" class="btn btn-primario btn-ancho" disabled>Confirmar apuesta</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       MODAL: RESULTADO
+  ══════════════════════════════ -->
+  <div id="modal-resultado" class="modal oculto" role="dialog" aria-modal="true">
+    <div class="modal-contenido modal-resultado-contenido">
+      <div id="resultado-icono" class="resultado-icono"></div>
+      <h2 id="resultado-titulo" class="resultado-titulo"></h2>
+      <p id="resultado-descripcion" class="resultado-descripcion"></p>
+      <div id="resultado-respuesta" class="resultado-respuesta-info"></div>
+      <button id="btn-continuar" class="btn btn-primario btn-ancho">Continuar</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       MODAL: RONDA SUPERADA
+  ══════════════════════════════ -->
+  <div id="modal-ronda-superada" class="modal oculto" role="dialog" aria-modal="true">
+    <div class="modal-contenido modal-resultado-contenido">
+      <div class="resultado-icono">📡</div>
+      <h2 class="resultado-titulo positivo">¡Nivel superado!</h2>
+      <p class="resultado-descripcion">El sistema avanza a un análisis más complejo.</p>
+      <div class="resultado-respuesta-info" style="gap:10px">
+        <div style="text-align:center;color:var(--color-texto-secundario);font-size:0.85rem">
+          ✓ Completado: <strong id="ronda-superada-anterior" style="color:var(--color-positivo)"></strong>
+        </div>
+        <div style="text-align:center;color:var(--color-dorado);font-size:0.95rem;font-weight:700">
+          → Siguiente: <span id="ronda-superada-nueva"></span>
+        </div>
+      </div>
+      <button id="btn-continuar-ronda" class="btn btn-primario btn-ancho">🗺️ Volver a Coordinados</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PANTALLA: VICTORIA
+  ══════════════════════════════ -->
+  <div id="pantalla-victoria" class="pantalla pantalla-fin oculto">
+    <div class="pantalla-fin-contenido">
+      <div class="fin-icono">🏆</div>
+      <h1 class="fin-titulo acento-dorado">¡Operación exitosa!</h1>
+      <p class="fin-descripcion">Sistema descifrado. Créditos finales: <span id="fichas-finales-victoria">—</span> </p>
+      <button id="btn-evaluacion-final" class="btn btn-primario btn-ancho">
+        🎓 Ver mis resultados
+      </button>
+      <button id="btn-reiniciar-victoria" class="btn btn-secundario btn-ancho" style="margin-top:8px">
+        🗺️ Nueva misión
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PANTALLA: DERROTA
+  ══════════════════════════════ -->
+  <div id="pantalla-derrota" class="pantalla pantalla-fin oculto">
+    <div class="pantalla-fin-contenido">
+      <div class="fin-icono">💀</div>
+      <h1 class="fin-titulo acento-coral">Sistema agotado</h1>
+      <p id="texto-derrota" class="fin-descripcion">Créditos insuficientes para continuar. Vuelve a recuperar fragmentos de datos.</p>
+      <button id="btn-volver-robar" class="btn btn-primario btn-ancho">
+        🗺️ Volver a robar
+      </button>
+      <button id="btn-evaluacion-derrota" class="btn btn-secundario btn-ancho" style="margin-top:8px">
+        🎓 Terminar y ver mis resultados
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/musica.js"></script>
+<script src="../js/controles-audio.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script>
+  if (!Auth.estaAutenticado()) window.location.href = '../pages/login.html';
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

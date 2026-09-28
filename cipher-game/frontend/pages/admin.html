@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CIPHER — Panel de Administración</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/admin.css"/>
+</head>
+<body>
+
+<header class="admin-header">
+  <div class="admin-logo">
+    <span>⬡</span>
+    <span class="admin-logo-titulo">CIPHER — Panel Admin</span>
+  </div>
+  <div class="admin-header-derecha">
+    <span id="admin-nombre" class="admin-nombre-texto"></span>
+    <button class="btn btn-ghost" style="width:auto;padding:8px 16px" id="btn-cerrar-sesion">
+      Cerrar sesión
+    </button>
+  </div>
+</header>
+
+<main class="admin-contenido">
+
+  <!-- Tarjetas de estadísticas globales -->
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icono">👥</div>
+      <div class="stat-valor" id="stat-estudiantes">—</div>
+      <div class="stat-label">Estudiantes registrados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icono">📋</div>
+      <div class="stat-valor" id="stat-pct-pretest">—</div>
+      <div class="stat-label">Acierto promedio pre-test</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icono">🎓</div>
+      <div class="stat-valor" id="stat-pct-posttest">—</div>
+      <div class="stat-label">Acierto promedio post-test</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icono">🎯</div>
+      <div class="stat-valor" id="stat-pct-ruleta">—</div>
+      <div class="stat-label">Acierto promedio ruleta</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icono">📊</div>
+      <div class="stat-valor" id="stat-total-resp">—</div>
+      <div class="stat-label">Respuestas totales</div>
+    </div>
+  </section>
+
+  <!-- Tabla de resultados por estudiante -->
+  <section class="tabla-seccion">
+    <div class="tabla-header">
+      <h2 class="tabla-titulo">Resultados por estudiante</h2>
+      <input
+        type="text" id="buscador" class="form-input"
+        placeholder="🔍 Buscar por nombre o grado..."
+        style="max-width:260px"/>
+    </div>
+
+    <div class="tabla-wrap">
+      <table class="tabla-resultados" id="tabla-estudiantes">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Grado</th>
+            <th>% Pre-test</th>
+            <th>% Post-test</th>
+            <th>Mejora</th>
+            <th>Nivel máx.</th>
+            <th>% Ruleta</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpo-tabla">
+          <tr><td colspan="8" class="tabla-vacia">Cargando datos...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Panel de detalle de estudiante (modal) -->
+  <div id="modal-detalle" class="modal-detalle oculto">
+    <div class="modal-detalle-contenido">
+      <div class="modal-detalle-header">
+        <h3 id="detalle-nombre">Estudiante</h3>
+        <button id="btn-cerrar-detalle" class="btn-cerrar">✕</button>
+      </div>
+      <div id="detalle-cuerpo"></div>
+    </div>
+  </div>
+
+</main>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script>
+  const usuario = Auth.protegerPagina('admin');
+  if (!usuario) throw new Error();
+
+  document.getElementById('admin-nombre').textContent  = usuario.nombre;
+  document.getElementById('btn-cerrar-sesion').onclick = () => Auth.cerrarSesion();
+
+  let todosLosEstudiantes = [];
+
+  // ── Cargar estadísticas globales ─────────────────────
+  async function cargarEstadisticas() {
+    try {
+      const d = await API.get('/admin/estadisticas');
+      document.getElementById('stat-estudiantes').textContent  = d.total_estudiantes;
+      document.getElementById('stat-pct-pretest').textContent  = d.porcentaje_pretest + '%';
+      document.getElementById('stat-pct-posttest').textContent = (d.porcentaje_posttest ?? 0) + '%';
+      document.getElementById('stat-pct-ruleta').textContent   = d.porcentaje_ruleta  + '%';
+      document.getElementById('stat-total-resp').textContent   = d.total_respuestas;
+    } catch(e) { console.error(e); }
+  }
+
+  // ── Cargar tabla de estudiantes ───────────────────────
+  async function cargarTabla() {
+    try {
+      todosLosEstudiantes = await API.get('/admin/resultados');
+      renderizarTabla(todosLosEstudiantes);
+    } catch(e) {
+      document.getElementById('cuerpo-tabla').innerHTML =
+        '<tr><td colspan="8" class="tabla-vacia">Error al cargar datos</td></tr>';
+    }
+  }
+
+  function renderizarTabla(datos) {
+    const cuerpo = document.getElementById('cuerpo-tabla');
+    if (!datos.length) {
+      cuerpo.innerHTML = '<tr><td colspan="8" class="tabla-vacia">Sin estudiantes registrados aún</td></tr>';
+      return;
+    }
+    cuerpo.innerHTML = datos.map(e => `
+      <tr>
+        <td>${e.nombre}</td>
+        <td><span class="badge-grado">${e.grado}</span></td>
+        <td><span class="pct ${colorPct(e.porcentaje_pretest)}">${e.porcentaje_pretest ?? '—'}%</span></td>
+        <td><span class="pct ${colorPct(e.porcentaje_posttest)}">${e.porcentaje_posttest ?? '—'}%</span></td>
+        <td>${badgeMejora(e.mejora_puntos, e.porcentaje_posttest)}</td>
+        <td>${e.nivel_maximo ?? '—'}</td>
+        <td><span class="pct ${colorPct(e.porcentaje_ruleta)}">${e.porcentaje_ruleta ?? '—'}%</span></td>
+        <td>
+          <button class="btn-ver" onclick="verDetalle('${e.correo}', '${e.nombre}')">
+            Ver →
+          </button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function badgeMejora(mejora, pctPost) {
+    // Sin post-test todavía → no hay comparación posible
+    if (pctPost === null || pctPost === undefined) return '<span class="mejora-cell pendiente">Pendiente</span>';
+    const m = Number(mejora ?? 0);
+    if (m > 0)  return `<span class="mejora-cell sube">▲ +${m}</span>`;
+    if (m < 0)  return `<span class="mejora-cell baja">▼ ${m}</span>`;
+    return '<span class="mejora-cell igual">= 0</span>';
+  }
+
+  function colorPct(pct) {
+    if (pct === null || pct === undefined) return '';
+    if (pct >= 70) return 'pct-alto';
+    if (pct >= 40) return 'pct-medio';
+    return 'pct-bajo';
+  }
+
+  // ── Buscador ──────────────────────────────────────────
+  document.getElementById('buscador').addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase();
+    renderizarTabla(todosLosEstudiantes.filter(est =>
+      est.nombre.toLowerCase().includes(q) ||
+      est.grado.toLowerCase().includes(q)
+    ));
+  });
+
+  // ── Detalle de estudiante ─────────────────────────────
+  async function verDetalle(correo, nombre) {
+    const modal = document.getElementById('modal-detalle');
+    document.getElementById('detalle-nombre').textContent = nombre;
+    document.getElementById('detalle-cuerpo').innerHTML = '<p style="color:var(--texto-dim)">Cargando...</p>';
+    modal.classList.remove('oculto');
+
+    // Buscar ID por correo en la lista cargada
+    const est = todosLosEstudiantes.find(e => e.correo === correo);
+    if (!est) return;
+
+    try {
+      const d = await API.get(`/admin/usuario/${est.id ?? correo}`);
+      const preOk       = d.pretest.filter(r => r.es_correcta).length;
+      const respuestasRuleta = d.ruleta.flatMap(s => s.ruleta_respuestas ?? []);
+      const ruOk        = respuestasRuleta.filter(r => r?.es_correcta).length;
+      const ruTot       = respuestasRuleta.length;
+
+      const TEMAS_LABEL = {
+        puntos: 'Puntos/Cuadrantes',
+        cuadrantes: 'Cuadrantes',
+        desplazamientos: 'Desplazamientos',
+        algebra: 'Álgebra básica',
+      };
+
+      const partidasPorNivel = [1, 2, 3].map(n => {
+        const del = d.partidas.filter(p => p.nivel === n);
+        const completadas = del.filter(p => p.completo).length;
+        return `<span>Nivel ${n}: ${completadas}/${del.length || 0} completada${del.length === 1 ? '' : 's'}</span>`;
+      }).join('');
+
+      document.getElementById('detalle-cuerpo').innerHTML = `
+        <div class="detalle-grid">
+          <div class="detalle-bloque">
+            <h4>Pre-test</h4>
+            <p>${preOk} / ${d.pretest.length} correctas</p>
+            <div class="detalle-temas">
+              ${['puntos','cuadrantes','desplazamientos','algebra'].map(t => {
+                const del = d.pretest.filter(r => r.tema === t);
+                const ok  = del.filter(r => r.es_correcta).length;
+                return `<span>${TEMAS_LABEL[t]}: ${ok}/${del.length}</span>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="detalle-bloque">
+            <h4>Post-test</h4>
+            <p>${d.posttest?.length ? d.posttest.filter(r => r.es_correcta).length + ' / ' + d.posttest.length + ' correctas' : 'Sin realizar'}</p>
+            <div class="detalle-temas">
+              ${(d.posttest?.length ? ['puntos','cuadrantes','desplazamientos','algebra'] : []).map(t => {
+                const del = d.posttest.filter(r => r.tema === t);
+                const ok  = del.filter(r => r.es_correcta).length;
+                return `<span>${TEMAS_LABEL[t]}: ${ok}/${del.length}</span>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="detalle-bloque">
+            <h4>Coordinados</h4>
+            <p>${d.partidas.length} partida${d.partidas.length !== 1 ? 's' : ''} jugada${d.partidas.length !== 1 ? 's' : ''}</p>
+            <div class="detalle-temas">${partidasPorNivel}</div>
+          </div>
+          <div class="detalle-bloque">
+            <h4>SIGMA Matrix (Ruleta)</h4>
+            <p>${ruOk} / ${ruTot} correctas · ${d.ruleta.length} sesión(es)</p>
+            <div class="detalle-temas">
+              ${['puntos','desplazamientos','algebra'].map(t => {
+                const del = respuestasRuleta.filter(r => r.tema === t);
+                const ok  = del.filter(r => r.es_correcta).length;
+                return `<span>${TEMAS_LABEL[t]} (ronda ${t === 'puntos' ? 1 : t === 'desplazamientos' ? 2 : 3}): ${ok}/${del.length}</span>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>`;
+    } catch(e) {
+      document.getElementById('detalle-cuerpo').innerHTML =
+        '<p style="color:var(--error)">Error al cargar el detalle</p>';
+    }
+  }
+
+  document.getElementById('btn-cerrar-detalle').onclick = () =>
+    document.getElementById('modal-detalle').classList.add('oculto');
+
+  // ── Iniciar ───────────────────────────────────────────
+  cargarEstadisticas();
+  cargarTabla();
+</script>
+</body>
+</html>
