@@ -20,7 +20,8 @@
     },
     {
       "src": "/",
-      "dest": "frontend/pages/login.html"
+      "status": 308,
+      "headers": { "Location": "/pages/login.html" }
     },
     {
       "src": "/(.*)",
