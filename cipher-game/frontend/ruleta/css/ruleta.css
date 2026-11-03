@@ -17,7 +17,7 @@
   justify-content: space-between;
   width: 100%;
   padding: 10px 20px;
-  background: rgba(13,27,46,0.95);
+  background: var(--color-fondo-panel);
   border-bottom: 1px solid var(--color-borde);
   flex-shrink: 0;
   z-index: 10;
@@ -70,7 +70,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(13,27,46,0.97);
+  background: var(--color-fondo-panel);
   border: 1.5px solid var(--color-dorado);
   border-radius: 16px;
   padding: 20px 32px;
@@ -91,7 +91,7 @@
 .toast-fichas.positivo  { color: var(--color-positivo); }
 .toast-fichas.negativo  { color: var(--color-negativo); }
 .toast-fichas.base      { color: var(--color-teal); }
-.toast-barra-wrap { height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; margin-bottom:8px; }
+.toast-barra-wrap { height:4px; background:var(--color-borde); border-radius:2px; overflow:hidden; margin-bottom:8px; }
 .toast-barra { height:100%; background:var(--color-dorado); border-radius:2px; width:100%; transition: width linear; }
 .toast-subtexto { font-size:0.75rem; color:var(--color-texto-secundario); font-style:italic; }
 
@@ -115,7 +115,7 @@
 #controles {
   display:flex; align-items:center; justify-content:center;
   gap:12px; padding:12px 16px;
-  background: rgba(13,27,46,0.95);
+  background: var(--color-fondo-panel);
   border-top: 1px solid var(--color-borde);
   flex-shrink:0; flex-wrap:wrap;
 }
@@ -125,7 +125,7 @@
 #panel-casillas {
   width: 270px;
   flex-shrink: 0;
-  background: rgba(10,18,32,0.95);
+  background: var(--color-fondo-panel);
   border-left: 1px solid var(--color-borde);
   display: flex;
   flex-direction: column;
@@ -191,4 +191,22 @@
 .btn-mute-beat:hover {
   background: rgba(20, 189, 172, 0.12);
   border-color: var(--color-teal);
+}
+
+/* ── Pantallas pequeñas: ruleta arriba, panel de casillas debajo ── */
+@media (max-width: 760px) {
+  #pantalla-juego { height: 100dvh; overflow-y: auto; }
+  #hud { padding: 8px 12px; gap: 8px; }
+  .hud-bloque { min-width: 0; }
+  .hud-central { gap: 10px; }
+  .hud-valor { font-size: 1.15rem; }
+  #zona-contenido { flex-direction: column; flex: none; overflow: visible; }
+  #zona-izquierda { flex: none; overflow: visible; }
+  #controles { padding-bottom: 72px; }   /* espacio para los botones flotantes */
+  #panel-casillas {
+    width: 100%;
+    max-height: 60vh;
+    border-left: none;
+    border-top: 1px solid var(--color-borde);
+  }
 }

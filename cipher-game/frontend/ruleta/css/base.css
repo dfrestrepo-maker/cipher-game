@@ -193,7 +193,7 @@ body {
   display: flex; flex-direction: column; align-items: center;
   gap: 20px; max-width: 480px; width: 90%; text-align: center;
   padding: 40px 32px;
-  background: rgba(13,27,46,0.8);
+  background: var(--color-fondo-panel);
   border: 1px solid var(--color-borde);
   border-radius: 24px;
   backdrop-filter: blur(12px);
@@ -256,3 +256,10 @@ body {
 .botin-icono   { font-size: 2rem; flex-shrink: 0; }
 .botin-texto   { font-family: var(--fuente-titulo); font-size: 1rem; color: var(--color-dorado); }
 .botin-subtexto{ font-size: 0.72rem; color: var(--color-texto-secundario); margin-top: 2px; }
+
+/* ── Pantallas pequeñas ─────────────────────────────────── */
+@media (max-width: 480px) {
+  .modal-contenido { padding: 20px 16px; }
+  .inicio-contenedor { padding: 28px 18px; }
+  .pantalla-fin-contenido { padding: 28px 18px; }
+}

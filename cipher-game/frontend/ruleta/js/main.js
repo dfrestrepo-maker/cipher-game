@@ -77,6 +77,10 @@ function _tamañoCanvas() {
   const hudH   = document.getElementById('hud').offsetHeight;
   const ctrlH  = document.getElementById('controles').offsetHeight;
   const panelW = document.getElementById('panel-casillas').offsetWidth;
+  // En pantallas angostas el panel va debajo (ruleta.css), así que no resta ancho
+  if (matchMedia('(max-width: 760px)').matches) {
+    return Math.max(220, Math.min(window.innerWidth - 24, window.innerHeight * 0.55));
+  }
   return Math.max(240, Math.min(
     window.innerHeight - hudH - ctrlH - 24,
     window.innerWidth  - panelW - 32,

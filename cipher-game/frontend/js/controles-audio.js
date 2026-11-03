@@ -12,18 +12,18 @@ const ControlesAudio = (() => {
     .audio-fab {
       position: fixed; right: 16px; bottom: 16px; z-index: 900;
       width: 44px; height: 44px; border-radius: 50%;
-      background: rgba(13,27,46,0.94); border: 1px solid #1E2E45;
-      color: #EEE8D5; font-size: 1.1rem; cursor: pointer;
+      background: var(--tema-panel, rgba(13,27,46,0.94)); border: 1px solid var(--tema-borde, #1E2E45);
+      color: var(--tema-texto, #EEE8D5); font-size: 1.1rem; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: all .18s ease;
     }
-    .audio-fab:hover { border-color: #14BDAC; background: rgba(20,189,172,.14); }
+    .audio-fab:hover { border-color: var(--tema-acento, #14BDAC); background: rgba(20,189,172,.14); }
 
     .audio-panel {
       position: fixed; right: 16px; bottom: 70px; z-index: 900;
       width: 230px; padding: 16px;
-      background: rgba(13,27,46,0.97); border: 1px solid #1E2E45;
-      border-radius: 12px; color: #EEE8D5;
+      background: var(--tema-panel, rgba(13,27,46,0.97)); border: 1px solid var(--tema-borde, #1E2E45);
+      border-radius: 12px; color: var(--tema-texto, #EEE8D5);
       font-family: 'Inter', sans-serif;
       box-shadow: 0 8px 30px rgba(0,0,0,.45);
       display: flex; flex-direction: column; gap: 14px;
@@ -32,42 +32,42 @@ const ControlesAudio = (() => {
 
     .audio-titulo {
       font-size: .7rem; font-weight: 700; letter-spacing: .09em;
-      text-transform: uppercase; color: #C9A84C;
+      text-transform: uppercase; color: var(--tema-dorado, #C9A84C);
     }
     .audio-fila { display: flex; flex-direction: column; gap: 5px; }
     .audio-fila-top {
       display: flex; justify-content: space-between; align-items: center;
-      font-size: .78rem; color: #7A8FA6;
+      font-size: .78rem; color: var(--tema-dim, #7A8FA6);
     }
-    .audio-valor { color: #14BDAC; font-weight: 600; }
+    .audio-valor { color: var(--tema-acento, #14BDAC); font-weight: 600; }
 
     .audio-slider {
       -webkit-appearance: none; appearance: none;
       width: 100%; height: 4px; border-radius: 3px;
-      background: #1E2E45; outline: none; cursor: pointer;
+      background: var(--tema-borde, #1E2E45); outline: none; cursor: pointer;
     }
     .audio-slider::-webkit-slider-thumb {
       -webkit-appearance: none; appearance: none;
       width: 14px; height: 14px; border-radius: 50%;
-      background: #14BDAC; cursor: pointer; border: none;
+      background: var(--tema-acento, #14BDAC); cursor: pointer; border: none;
     }
     .audio-slider::-moz-range-thumb {
       width: 14px; height: 14px; border-radius: 50%;
-      background: #14BDAC; cursor: pointer; border: none;
+      background: var(--tema-acento, #14BDAC); cursor: pointer; border: none;
     }
 
     .audio-btn-pantalla {
       width: 100%; padding: 9px; border-radius: 8px;
-      background: transparent; border: 1px solid #14BDAC;
-      color: #14BDAC; font-size: .8rem; font-weight: 600;
+      background: transparent; border: 1px solid var(--tema-acento, #14BDAC);
+      color: var(--tema-acento, #14BDAC); font-size: .8rem; font-weight: 600;
       cursor: pointer; font-family: 'Inter', sans-serif;
       transition: background .15s ease;
     }
     .audio-btn-pantalla:hover { background: rgba(20,189,172,.12); }
 
     .audio-nota {
-      font-size: .66rem; color: #5A7A8A; line-height: 1.45;
-      border-top: 1px solid #162035; padding-top: 10px;
+      font-size: .66rem; color: var(--tema-dim, #5A7A8A); line-height: 1.45;
+      border-top: 1px solid var(--tema-borde, #162035); padding-top: 10px;
     }
   `;
 

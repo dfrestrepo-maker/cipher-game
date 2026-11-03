@@ -21,6 +21,18 @@
   --amarillo:        #C9A84C;
   --morado:          #7B68EE;
   --radio:           8px;
+  /* Antes usadas sin definir; ahora existen en ambos temas */
+  --texto-2:         var(--texto-dim);
+  --apagado:         #4A5A70;
+  /* Fondos que antes estaban fijos en el CSS (tema.css los cambia en claro) */
+  --barra:           #0b0b20;
+  --input:           #07071a;
+  --input-verde:     #071a07;
+  --texto-fuerte:    #fff;
+  --sobre-amarillo:  #1a1400;
+  --velo:            rgba(8, 8, 26, 0.96);
+  --caja-inicio:     #10102a;
+  --caja-borde:      #2a2a55;
 }
 
 html, body {
@@ -48,7 +60,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  background: #0b0b20;
+  background: var(--barra);
   border-bottom: 1px solid var(--panel-borde-2);
 }
 
@@ -68,7 +80,7 @@ body {
   font-size: 17px;
   font-weight: 800;
   letter-spacing: 3px;
-  color: #fff;
+  color: var(--texto-fuerte);
 }
 
 .subtitulo {
@@ -149,7 +161,7 @@ body {
   font-size: 21px;
   font-weight: 700;
   font-family: var(--fuente-mono);
-  color: #fff;
+  color: var(--texto-fuerte);
 }
 
 /* ═══════════════════════════════════════════
@@ -278,10 +290,10 @@ body {
 .coord-input {
   width: 62px;
   height: 46px;
-  background: #07071a;
+  background: var(--input);
   border: 1px solid var(--cyan);
   border-radius: 4px;
-  color: #fff;
+  color: var(--texto-fuerte);
   font-size: 20px;
   font-family: var(--fuente-mono);
   font-weight: 700;
@@ -304,7 +316,7 @@ body {
   width: 100%;
   padding: 12px 8px;
   background: var(--amarillo);
-  color: #1a1400;
+  color: var(--sobre-amarillo);
   border: none;
   border-radius: 4px;
   font-size: 13px;
@@ -314,7 +326,7 @@ body {
   transition: background .15s, transform .1s;
 }
 
-.btn-ejecutar:hover   { background: #ffe082; }
+.btn-ejecutar:hover   { filter: brightness(1.12); }
 .btn-ejecutar:active  { transform: scale(.98); }
 .btn-ejecutar:disabled {
   background: var(--panel-borde);
@@ -374,8 +386,8 @@ body {
 .barra-inferior {
   display: flex;
   gap: 8px;
-  padding: 6px 8px;
-  background: #0b0b20;
+  padding: 6px 68px;   /* a los lados quedan los botones flotantes de tema y audio */
+  background: var(--barra);
   border-top: 1px solid var(--panel-borde-2);
   align-items: flex-start;
 }
@@ -403,7 +415,7 @@ body {
 }
 
 .calculo-box {
-  background: #07071a;
+  background: var(--input);
   border: 1px solid var(--cyan);
   border-radius: 3px;
   padding: 2px 8px;
@@ -411,7 +423,7 @@ body {
 }
 
 .calculo-resultado {
-  background: #071a07;
+  background: var(--input-verde);
   border: 1px solid var(--verde);
   border-radius: 3px;
   padding: 2px 8px;
@@ -584,7 +596,7 @@ body {
 .pantalla-inicio {
   position: fixed;
   inset: 0;
-  background: rgba(8, 8, 26, 0.96);
+  background: var(--velo);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -595,8 +607,8 @@ body {
 .pantalla-inicio.oculto { display: none; }
 
 .inicio-caja {
-  background: #10102a;
-  border: 1px solid #2a2a55;
+  background: var(--caja-inicio);
+  border: 1px solid var(--caja-borde);
   border-radius: 14px;
   padding: 42px 52px;
   text-align: center;
@@ -616,7 +628,7 @@ body {
   font-size: 28px;
   font-weight: 900;
   letter-spacing: 5px;
-  color: #fff;
+  color: var(--texto-fuerte);
   margin-bottom: 6px;
 }
 
@@ -632,7 +644,7 @@ body {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 1px;
-  color: #1a1400;
+  color: var(--sobre-amarillo);
   background: var(--amarillo);
   padding: 6px 16px;
   border-radius: 20px;
@@ -679,7 +691,7 @@ body {
 }
 
 .btn-iniciar:hover {
-  background: #81d4fa;
+  filter: brightness(1.12);
   box-shadow: 0 0 30px rgba(79,195,247,0.5);
 }
 
@@ -693,4 +705,54 @@ body {
 @keyframes parpadeo-tiempo {
   from { opacity: 1; }
   to   { opacity: 0.45; }
+}
+
+/* ═══════════════════════════════════════════
+   Pantallas pequeñas (celular, tablet vertical
+   o celular acostado): todo en una columna con scroll
+═══════════════════════════════════════════ */
+@media (max-width: 900px), (max-height: 560px) {
+  html, body { height: auto; min-height: 100%; overflow: auto; }
+  body { display: block; }
+
+  .barra-superior {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 8px 12px;
+  }
+  .stats-header { gap: 14px; }
+  .stat-valor { font-size: 17px; }
+
+  .area-juego {
+    flex-direction: column;
+    overflow: visible;
+  }
+  .contenedor-canvas { order: -1; }
+  #canvas-juego {
+    width: 100%;
+    max-width: min(100%, 85vh);
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 auto;
+  }
+  .panel-izquierdo,
+  .panel-derecho {
+    width: 100%;
+    overflow: visible;
+  }
+  .panel-izquierdo { order: 1; }
+  #minimapa { max-width: 180px; margin: 0 auto; }
+
+  .barra-inferior {
+    flex-direction: column;
+    padding: 8px 8px 72px;   /* deja libre el espacio de los botones flotantes */
+  }
+
+  .inicio-caja { padding: 28px 20px; }
+  .overlay-caja { padding: 24px 20px; }
+}
+
+@media (max-width: 420px) {
+  .subtitulo { display: none; }
+  .coord-input { width: 56px; }
 }

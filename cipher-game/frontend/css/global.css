@@ -169,3 +169,9 @@ html, body {
   font-weight: 600;
 }
 .auth-footer a:hover { text-decoration: underline; }
+
+/* ── Pantallas pequeñas ─────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-card { padding: 28px 20px; }
+  .btn { padding: 12px 20px; }
+}

@@ -1,0 +1,102 @@
+/* ═══════════════════════════════════════════════════════════
+   TEMA.CSS — Modo claro y botón para cambiar de tema
+   Se carga después de las hojas de cada página. El modo oscuro
+   es el original; aquí solo se reemplazan las variables en claro.
+   Incluye los nombres de las tres hojas: páginas (global.css),
+   Coordinados (estilos.css) y Ruleta (base.css).
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: dark;
+  /* Paneles inyectados por JS (controles de audio, botón de tema) */
+  --tema-panel: rgba(13,27,46,0.95);
+  --tema-borde: #1E2E45;
+  --tema-texto: #EEE8D5;
+  --tema-dim:   #7A8FA6;
+  --tema-acento:#14BDAC;
+  --tema-dorado:#C9A84C;
+}
+
+:root[data-tema="claro"] {
+  color-scheme: light;
+
+  --tema-panel: rgba(255,255,255,0.97);
+  --tema-borde: #D5DDE7;
+  --tema-texto: #15202E;
+  --tema-dim:   #5B6B7E;
+  --tema-acento:#0B7F74;
+  --tema-dorado:#8F6E12;
+
+  /* global.css — login, registro, pre-test, resultados, admin, inicio */
+  --fondo:          #F3F5F9;
+  --fondo-panel:    #FFFFFF;
+  --fondo-input:    #F2F5F9;
+  --borde:          #D5DDE7;
+  --borde-activo:   #0B7F74;
+  --cyan:           #0B7F74;
+  --cyan-oscuro:    #08665D;
+  --dorado:         #8F6E12;
+  --dorado-claro:   #7A5E0F;
+  --texto:          #15202E;
+  --texto-dim:      #5B6B7E;
+  --error:          #C73A3A;
+  --exito:          #1C8F5A;
+
+  /* coordinados/css/estilos.css */
+  --fondo2:         #E9EEF4;
+  --panel:          #FFFFFF;
+  --panel-borde:    #D5DDE7;
+  --panel-borde-2:  #E1E7EE;
+  --verde:          #1C8F5A;
+  --rojo:           #C73A3A;
+  --amarillo:       #8F6E12;
+  --morado:         #5A4DC9;
+  --apagado:        #8A99AB;
+  --barra:          #FFFFFF;
+  --input:          #F7F9FC;
+  --input-verde:    #EAF7F0;
+  --texto-fuerte:   #0B1522;
+  --sobre-amarillo: #FFFFFF;
+  --velo:           rgba(243,245,249,0.96);
+  --caja-inicio:    #FFFFFF;
+  --caja-borde:     #D5DDE7;
+
+  /* ruleta/css/base.css */
+  --color-fondo:              #F3F5F9;
+  --color-fondo-panel:        #FFFFFF;
+  --color-fondo-tarjeta:      #F2F5F9;
+  --color-fondo-tarjeta-hover:#E6ECF3;
+  --color-teal:               #0B7F74;
+  --color-teal-oscuro:        #08665D;
+  --color-purpura:            #5A4DC9;
+  --color-purpura-oscuro:     #463BA8;
+  --color-dorado:             #8F6E12;
+  --color-dorado-claro:       #7A5E0F;
+  --color-positivo:           #1C8F5A;
+  --color-positivo-fondo:     #E3F5EC;
+  --color-neutro:             #5B6B7E;
+  --color-neutro-fondo:       #EDF1F5;
+  --color-negativo:           #C73A3A;
+  --color-negativo-fondo:     #FBE9E9;
+  --color-coral:              #C73A3A;
+  --color-texto:              #15202E;
+  --color-texto-secundario:   #5B6B7E;
+  --color-borde:              #D5DDE7;
+  --color-borde-suave:        #E1E7EE;
+}
+
+/* ── Botón flotante de tema (lo crea js/tema.js) ─────────── */
+.boton-tema {
+  position: fixed; left: 16px; bottom: 16px; z-index: 900;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--tema-panel);
+  border: 1px solid var(--tema-borde);
+  color: var(--tema-texto);
+  font-size: 1.2rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  transition: border-color .18s ease, transform .1s ease;
+}
+.boton-tema:hover { border-color: var(--tema-acento); }
+.boton-tema:active { transform: scale(.94); }
+.boton-tema:focus-visible { outline: 2px solid var(--tema-acento); outline-offset: 2px; }

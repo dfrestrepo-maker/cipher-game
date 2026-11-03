@@ -898,7 +898,7 @@ function renderizarMinimapa() {
   const { miniCtx, miniCanvas } = juego;
   const tam = miniCanvas.width / (CONFIG.RADIO_GRID * 2 + 1);
 
-  miniCtx.fillStyle = '#0c0c20';
+  miniCtx.fillStyle = CONFIG.COLORES.fondoCanvas;
   miniCtx.fillRect(0, 0, miniCanvas.width, miniCanvas.height);
 
   juego.obstaculos.forEach(o => o.celdas.forEach(c => {

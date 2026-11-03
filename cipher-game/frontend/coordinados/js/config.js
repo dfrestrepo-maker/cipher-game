@@ -8,11 +8,6 @@ const CONFIG = {
   RADIO_ZONA_SEGURA: 2,
 
   COLORES: {
-    fondoCanvas:  '#0c0c20',
-    lineaGrid:    '#1a1a3e',
-    ejeGrid:      '#d4cbb4',
-    textoGrid:    '#b8af98',
-
     jugador:      '#4fc3f7',
     jugadorBorde: '#0288d1',
     jugadorGlow:  'rgba(79,195,247,0.3)',
@@ -41,3 +36,15 @@ const CONFIG = {
     moneda:  9,
   },
 };
+
+// Colores del plano que cambian con el modo claro/oscuro (js/tema.js).
+// El resto (jugador, guardias, monedas, salida) se ve bien en ambos fondos.
+const COLORES_PLANO = {
+  oscuro: { fondoCanvas: '#0c0c20', lineaGrid: '#1a1a3e', ejeGrid: '#d4cbb4', textoGrid: '#b8af98' },
+  claro:  { fondoCanvas: '#FFFFFF', lineaGrid: '#E1E7EE', ejeGrid: '#2A3546', textoGrid: '#5B6B7E' },
+};
+function aplicarTemaPlano(tema) {
+  Object.assign(CONFIG.COLORES, COLORES_PLANO[tema] || COLORES_PLANO.oscuro);
+}
+aplicarTemaPlano(document.documentElement.dataset.tema);
+document.addEventListener('cambio-tema', e => aplicarTemaPlano(e.detail));
